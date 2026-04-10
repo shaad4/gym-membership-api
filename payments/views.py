@@ -11,7 +11,12 @@ class PaymentViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Payment.objects.filter(user = self.request.user)
+        user = self.request.user
+
+        if user.role == 'owner':
+            return Payment.objects.filter(membership__gym__owner=user)
+        
+        return Payment.objects.filter(user=user)
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, status='success')
