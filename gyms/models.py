@@ -9,3 +9,16 @@ class Gym(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class Membership(models.Model):
+    gym = models.ForeignKey(Gym, on_delete=models.CASCADE, related_name='memberships')
+    name = models.CharField(max_length=150)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    duration_days = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.name} - {self.gym.name}"
+    
+
+    
