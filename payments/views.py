@@ -19,4 +19,11 @@ class PaymentViewSet(ModelViewSet):
         return Payment.objects.filter(user=user)
     
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, status='success')
+        membership = serializer.validated_data['membership']
+
+        amount = membership.price
+        serializer.save(
+            user=self.request.user,
+            amount=amount,
+            status='success'
+        )

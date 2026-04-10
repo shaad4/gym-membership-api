@@ -31,7 +31,7 @@ class GymViewSet(ModelViewSet):
     def user(self, request, pk=None):
         gym = self.get_object()
 
-        if gym.onwer != request.user:
+        if gym.owner != request.user:
             raise PermissionDenied("Not Your Gym")
         
         payments = Payment.objects.filter(membership__gym=gym)
