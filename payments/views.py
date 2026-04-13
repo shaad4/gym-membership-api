@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from .models import Payment
 from .serializers import PaymentSerializer
 # Create your views here.
@@ -20,6 +21,15 @@ class PaymentViewSet(ModelViewSet):
     
     def perform_create(self, serializer):
         membership = serializer.validated_data['membership']
+
+        existing = Payment.objects.filter(
+            user=self.request.user,
+            membership = membership,
+            status = 'success'
+        )
+
+        if existing.exists():
+            raise PermissionDenied("You already purchase this membership")
 
         amount = membership.price
         serializer.save(

@@ -14,7 +14,11 @@ from .permissions import IsOwner
 class GymViewSet(ModelViewSet):
     queryset = Gym.objects.all()
     serializer_class = GymSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsOwner()]
+        return [IsAuthenticatedOrReadOnly()]
 
     def get_queryset(self):
         user = self.request.user
@@ -35,13 +39,16 @@ class GymViewSet(ModelViewSet):
             raise PermissionDenied("Not Your Gym")
         
         payments = Payment.objects.filter(membership__gym=gym)
-
+        
+        seen = set()
         users = []
         for p in payments:
-            users.append({
-                'id' : p.user.id,
-                'username' : p.user.username
-            })
+            if p.user.id not in seen:
+                users.append({
+                    'id' : p.user.id,
+                    'username' : p.user.username
+                })
+                seen.add(p.user.id)
 
         return Response(users)
 
@@ -49,7 +56,11 @@ class GymViewSet(ModelViewSet):
 class MembershipViewSet(ModelViewSet):
     queryset = Membership.objects.all()
     serializer_class = MembershipSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsOwner()]
+        return [IsAuthenticatedOrReadOnly()]
 
     def get_queryset(self):
         user = self.request.user
