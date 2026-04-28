@@ -40,6 +40,7 @@ urlpatterns = [
     path('api/auth/', include('accounts.urls')),
     path('api/', include('gyms.urls')),
     path('api/', include('payments.urls')),
+    path('api/', include('testapp.urls')),
 
     #swagger URLs
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0)),

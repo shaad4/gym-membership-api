@@ -8,12 +8,20 @@ from payments.models import Payment
 from .models import Gym, Membership
 from .serializers import GymSerializer, MembershipSerializer
 from .permissions import IsOwner
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
+
+
+class MyPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 50
 
 class GymViewSet(ModelViewSet):
     queryset = Gym.objects.all()
     serializer_class = GymSerializer
+    pagination_class = MyPagination
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -56,6 +64,7 @@ class GymViewSet(ModelViewSet):
 class MembershipViewSet(ModelViewSet):
     queryset = Membership.objects.all()
     serializer_class = MembershipSerializer
+    pagination_class = MyPagination
     
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
